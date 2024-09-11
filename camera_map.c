@@ -195,20 +195,20 @@ int table_gen (mapTable **p_mt)
 
 
 // 预处理映射表，提高实时性能。只需提前处理一次
-int table_preproc ( BYTE *top_buff,					// 上方摄像头输入图像缓冲
-				    BYTE *right_buff,				// 右方摄像头输入图像缓冲
-					BYTE *bottom_buff,				// 下方摄像头输入图像缓冲
-					BYTE *left_buff,				// 左方摄像头输入图像缓冲
-					BYTE *yuv_out,					// 输出图像缓冲
-					mapTable *p_map_table,			// 原始映射表
-					PBYTE **type_1_addr_in,			// 输入像素地址类型1, 表示源自单独像素
-					PBYTE **type_2_addr_in,			// 输入像素地址类型2, 表示源自两个像素, 两像素相邻存储
-					PBYTE **type_1_addr_out,		// 输出像素地址类型1, 表示源自单独像素
-					PBYTE **type_2_addr_out,		// 输出像素地址类型2, 表示源自两个像素, 读取相邻两地址
-					UINT *type_1_counter,			// 类型1像素计数器
-					UINT *type_2_counter,			// 类型2像素计数器
-					BYTE **ratio,					// 混合比例, 与类型2配合使用
-					UINT size_out )					// 输出尺寸, 暂时没什么用
+int table_preproc (BYTE *top_buff,			// 上方摄像头输入图像缓冲
+		   BYTE *right_buff,			// 右方摄像头输入图像缓冲
+		   BYTE *bottom_buff,			// 下方摄像头输入图像缓冲
+		   BYTE *left_buff,			// 左方摄像头输入图像缓冲
+		   BYTE *yuv_out,			// 输出图像缓冲
+		   mapTable *p_map_table,		// 原始映射表
+		   PBYTE **type_1_addr_in,		// 输入像素地址类型1, 表示源自单独像素
+		   PBYTE **type_2_addr_in,		// 输入像素地址类型2, 表示源自两个像素, 两像素相邻存储
+		   PBYTE **type_1_addr_out,		// 输出像素地址类型1, 表示源自单独像素
+		   PBYTE **type_2_addr_out,		// 输出像素地址类型2, 表示源自两个像素, 读取相邻两地址
+		   UINT *type_1_counter,		// 类型1像素计数器
+		   UINT *type_2_counter,		// 类型2像素计数器
+		   BYTE **ratio,			// 混合比例, 与类型2配合使用
+		   UINT size_out )			// 输出尺寸, 暂时没什么用
 {
 	mapTable *p_table = p_map_table;	// 取得原始映射表指针
 	
@@ -274,9 +274,9 @@ int table_preproc ( BYTE *top_buff,					// 上方摄像头输入图像缓冲
 		if (cid_2 == 0 && cid_1 != 0)
 		{
 			*(i_addr_1 ++) = cam_Y[cid_1-1] + (p_table -> offset_1);	// Y分量输入地址
-			*(o_addr_1 ++) = Y_out + i;									// Y分量输出地址 (映射表与输出图像成对应关系)
+			*(o_addr_1 ++) = Y_out + i;					// Y分量输出地址 (映射表与输出图像成对应关系)
 			
-			++ *type_1_counter;											// 类型1计数器递增
+			++ *type_1_counter;						// 类型1计数器递增
 		}
 		
 		// 类型2, 摄像头1 ID与摄像头2 ID全部有效, 表示源自两个像素
@@ -284,11 +284,11 @@ int table_preproc ( BYTE *top_buff,					// 上方摄像头输入图像缓冲
 		{
 			*(i_addr_2 ++) = cam_Y[cid_1-1] + (p_table -> offset_1);	// Y1分量输入地址1, 对应摄像头1
 			*(i_addr_2 ++) = cam_Y[cid_2-1] + (p_table -> offset_2);	// Y2分量输入地址2, 对应摄像头2
-			*(o_addr_2 ++) = Y_out + i;									// 混合Y分量输出地址
+			*(o_addr_2 ++) = Y_out + i;					// 混合Y分量输出地址
 			
-			*(rt ++) = p_table -> ratio;								// 混合比例
+			*(rt ++) = p_table -> ratio;					// 混合比例
 			
-			++ *type_2_counter;											// 类型2计数器递增
+			++ *type_2_counter;						// 类型2计数器递增
 		}
 		// 条件分支结束
 		++ p_table;
@@ -331,19 +331,19 @@ int table_preproc ( BYTE *top_buff,					// 上方摄像头输入图像缓冲
 					p_m1 = cam_C[cid_1-1] + ofs_1 - ofs_1 / WIDTH_IN / 2 * WIDTH_IN - 1;
 				}
 				
-				else																// 偶数列, 奇数行
+				else										// 偶数列, 奇数行
 				{
 					ofs_1 -= WIDTH_IN;
 					p_m1 = cam_C[cid_1-1] + ofs_1 - ofs_1 / WIDTH_IN / 2 * WIDTH_IN;
 				}
 				
-				*(i_addr_1 ++) = p_m1;												// U分量输入地址
-				*(i_addr_1 ++) = ++ p_m1;											// V分量输入地址
+				*(i_addr_1 ++) = p_m1;							// U分量输入地址
+				*(i_addr_1 ++) = ++ p_m1;						// V分量输入地址
 
-				*(o_addr_1 ++) = C_out + i - i / WIDTH_OUT / 2 * WIDTH_OUT;			// U分量输出地址
+				*(o_addr_1 ++) = C_out + i - i / WIDTH_OUT / 2 * WIDTH_OUT;		// U分量输出地址
 				*(o_addr_1 ++) = C_out + i - i / WIDTH_OUT / 2 * WIDTH_OUT + 1;		// V分量输出地址
 				
-				(*type_1_counter) += 2;												// 类型1计数器递增
+				(*type_1_counter) += 2;							// 类型1计数器递增
 			}
 		
 			else if (cid_1 != 0 && cid_2 != 0)
@@ -363,7 +363,7 @@ int table_preproc ( BYTE *top_buff,					// 上方摄像头输入图像缓冲
 					ofs_1 -= WIDTH_IN;
 					p_m1 = cam_C[cid_1-1] + ofs_1 - ofs_1 / WIDTH_IN / 2 * WIDTH_IN - 1;
 				}		
-				else																// 偶数列, 奇数行
+				else										// 偶数列, 奇数行
 				{
 					ofs_1 -= WIDTH_IN;
 					p_m1 = cam_C[cid_1-1] + ofs_1 - ofs_1 / WIDTH_IN / 2 * WIDTH_IN;
@@ -381,7 +381,7 @@ int table_preproc ( BYTE *top_buff,					// 上方摄像头输入图像缓冲
 					ofs_2 -= WIDTH_IN;
 					p_m2 = cam_C[cid_2-1] + ofs_2 - ofs_2 / WIDTH_IN / 2 * WIDTH_IN - 1;
 				}	
-				else																// 偶数列, 奇数行
+				else										// 偶数列, 奇数行
 				{
 					ofs_2 -= WIDTH_IN;
 					p_m2 = cam_C[cid_2-1] + ofs_2 - ofs_2 / WIDTH_IN / 2 * WIDTH_IN;
@@ -393,13 +393,13 @@ int table_preproc ( BYTE *top_buff,					// 上方摄像头输入图像缓冲
 				*(i_addr_2 ++) = ++ p_m1;				// V1分量输入地址
 				*(i_addr_2 ++) = ++ p_m2;				// V2分量输入地址
 			
-				*(o_addr_2 ++) = C_out + i - i / WIDTH_OUT / 2 * WIDTH_OUT;			// U分量输出地址
+				*(o_addr_2 ++) = C_out + i - i / WIDTH_OUT / 2 * WIDTH_OUT;		// U分量输出地址
 				*(o_addr_2 ++) = C_out + i - i / WIDTH_OUT / 2 * WIDTH_OUT + 1;		// V分量输出地址
 			
 				*(rt ++) = p_table -> ratio;			// U分量混合比例
 				*(rt ++) = p_table -> ratio;			// V分量混合比例
 				
-				(*type_2_counter) += 2;					// 类型2计数器递增
+				(*type_2_counter) += 2;				// 类型2计数器递增
 			
 			}
 			// 条件分支结束
@@ -420,13 +420,13 @@ int table_preproc ( BYTE *top_buff,					// 上方摄像头输入图像缓冲
 
 
 // 写入输出缓冲（请把此函数放在主循环里）
-void write_yuv_output ( PBYTE *type_1_addr_in,		// 输入像素地址类型1, 表示源自单独像素
-						PBYTE *type_2_addr_in,		// 输入像素地址类型2, 表示源自两个像素, 两像素相邻存储
-						PBYTE *type_1_addr_out,		// 输出像素地址类型1, 表示源自单独像素
-						PBYTE *type_2_addr_out,		// 输出像素地址类型2, 表示源自两个像素, 读取相邻两地址
-						UINT type_1_counter,		// 类型1像素计数器
-						UINT type_2_counter,		// 类型2像素计数器
-						BYTE *ratio )				// 混合比例, 与类型2配合使用
+void write_yuv_output (PBYTE *type_1_addr_in,		// 输入像素地址类型1, 表示源自单独像素
+		       PBYTE *type_2_addr_in,		// 输入像素地址类型2, 表示源自两个像素, 两像素相邻存储
+		       PBYTE *type_1_addr_out,		// 输出像素地址类型1, 表示源自单独像素
+		       PBYTE *type_2_addr_out,		// 输出像素地址类型2, 表示源自两个像素, 读取相邻两地址
+		       UINT type_1_counter,		// 类型1像素计数器
+		       UINT type_2_counter,		// 类型2像素计数器
+		       BYTE *ratio )			// 混合比例, 与类型2配合使用
 						
 {
 	register BYTE r;		// 临时存储混合比例
@@ -441,5 +441,4 @@ void write_yuv_output ( PBYTE *type_1_addr_in,		// 输入像素地址类型1, �
 		r = *(ratio ++);	// 取得混合比例
 		**type_2_addr_out ++ = ((**type_2_addr_in ++) * r + (**++ type_2_addr_in) * (255 - r)) >> 8; 	// 由输入地址取得像素值混合叠加后写进输出地址	
 	}
-	
 }
